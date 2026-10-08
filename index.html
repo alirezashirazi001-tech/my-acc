@@ -2,32 +2,34 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>حسابداری همراه</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
+    * { box-sizing: border-box; }
     body { font-family: Tahoma, sans-serif; padding: 10px; background-color: #f4f7f6; margin: 0; }
     
-    /* استایل فرم ورود */
+    /* فرم ورود */
     .login-container { display: flex; justify-content: center; align-items: center; min-height: 80vh; }
     .login-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); width: 100%; max-width: 350px; text-align: center; }
     .login-card h2 { font-size: 18px; margin-bottom: 20px; color: #2c3e50; }
-    .login-card input { width: 100%; padding: 11px; margin-top: 10px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; font-size: 14px; text-align: center; }
+    .login-card input { width: 100%; padding: 11px; margin-top: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; text-align: center; }
     .login-card button { background-color: #27ae60; color: white; border: none; padding: 11px; border-radius: 8px; font-weight: bold; width: 100%; margin-top: 18px; cursor: pointer; font-size: 14px; }
     .login-error { color: #e74c3c; font-size: 12px; margin-top: 10px; font-weight: bold; display: none; }
 
-    /* استایل کارت اصلی برنامه */
+    /* کارت اصلی */
     .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 1000px; margin: 0 auto; display: none; }
     
-    .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
     .header-title { font-size: 16px; font-weight: bold; color: #333; margin: 0; }
     .header-actions { display: flex; gap: 8px; align-items: center; }
-    .btn-sheet { background-color: #0f9d58; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
-    .btn-logout { background-color: #e74c3c; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 0; width: auto; }
+    .btn-sheet { background-color: #0f9d58; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
+    .btn-logout { background-color: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 0; width: auto; }
 
+    /* نوار وضعیت */
     .network-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; background-color: #e8f4f8; padding: 8px 12px; border-radius: 8px; font-size: 12px; margin-bottom: 15px; font-weight: bold; gap: 8px; }
     .status-online { color: #27ae60; }
     .status-offline { color: #e74c3c; }
@@ -35,54 +37,58 @@
     .status-updated { color: #27ae60; }
     .sync-badge { background-color: #f39c12; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; display: none; }
 
-    .tabs { display: flex; margin-bottom: 15px; border-bottom: 2px solid #ddd; overflow-x: auto; }
-    .tab-btn { flex: 1; padding: 8px 5px; border: none; background: none; font-size: 12px; font-weight: bold; cursor: pointer; color: #666; white-space: nowrap; }
+    /* تب‌ها */
+    .tabs { display: flex; margin-bottom: 15px; border-bottom: 2px solid #ddd; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .tab-btn { flex: 1; padding: 10px 8px; border: none; background: none; font-size: 12px; font-weight: bold; cursor: pointer; color: #666; white-space: nowrap; }
     .tab-btn.active { color: #27ae60; border-bottom: 3px solid #27ae60; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
     .sub-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
-    .sub-tab-btn { flex: 1; padding: 7px; border: 1px solid #27ae60; background: white; color: #27ae60; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; }
+    .sub-tab-btn { flex: 1; padding: 8px; border: 1px solid #27ae60; background: white; color: #27ae60; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; }
     .sub-tab-btn.active { background: #27ae60; color: white; }
     .sub-tab-content { display: none; }
     .sub-tab-content.active { display: block; }
 
     label { display: block; margin-top: 10px; color: #555; font-size: 12px; }
-    input, select, button { width: 100%; padding: 9px; margin-top: 4px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; font-size: 13px; }
+    input, select, button { width: 100%; padding: 10px; margin-top: 4px; border-radius: 8px; border: 1px solid #ccc; font-size: 13px; }
     button { background-color: #27ae60; color: white; border: none; font-weight: bold; margin-top: 15px; cursor: pointer; }
     button:disabled { background-color: #95a5a6; }
     .status { margin-top: 12px; text-align: center; font-weight: bold; font-size: 13px; }
     
-    .table-container { overflow-x: auto; margin-top: 12px; width: 100%; }
-    table { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: auto; }
-    th, td { border: 1px solid #ddd; padding: 6px 4px; text-align: center; }
-    th { background-color: #f2f2f2; color: #333; font-size: 11px; white-space: nowrap; }
+    /* بهینه‌سازی کانتینر و اسکرول جدول برای موبایل */
+    .table-container { overflow-x: auto; margin-top: 12px; width: 100%; -webkit-overflow-scrolling: touch; border: 1px solid #e0e0e0; border-radius: 8px; }
+    table { width: 100%; min-width: 650px; border-collapse: collapse; font-size: 12px; }
+    th, td { border: 1px solid #ddd; padding: 8px 6px; text-align: center; vertical-align: middle; }
+    th { background-color: #f2f2f2; color: #333; font-size: 12px; white-space: nowrap !important; word-break: keep-all; font-weight: bold; }
     th.sortable { cursor: pointer; user-select: none; }
     th.sortable:hover { background-color: #e0e0e0; }
     
-    .col-doc { width: 45px; white-space: nowrap; }
-    .col-date { width: 75px; white-space: nowrap; }
-    .col-num { width: 70px; white-space: nowrap; }
-    .col-acc { max-width: 130px; white-space: normal; word-break: break-word; }
-    .col-desc { white-space: normal; word-break: break-word; text-align: right; }
+    /* ستون‌های جدول */
+    .col-doc { width: 60px; white-space: nowrap; }
+    .col-date { width: 85px; white-space: nowrap; }
+    .col-num { width: 90px; white-space: nowrap; }
+    .col-acc { min-width: 110px; max-width: 150px; white-space: normal; word-break: break-word; }
+    .col-desc { min-width: 140px; white-space: normal; word-break: break-word; text-align: right; }
     
-    .action-col { width: 65px; min-width: 65px; white-space: nowrap; }
-    .btn-action { padding: 3px 6px; font-size: 11px; margin: 1px; border-radius: 4px; cursor: pointer; width: auto; margin-top: 0; display: inline-block; }
+    .action-col { width: 75px; min-width: 75px; white-space: nowrap; }
+    .btn-action { padding: 4px 7px; font-size: 11px; margin: 1px; border-radius: 4px; cursor: pointer; width: auto; margin-top: 0; display: inline-block; }
     .btn-edit { background-color: #f39c12; color: white; }
     .btn-delete { background-color: #e74c3c; color: white; }
     
+    /* باکس فیلترها */
     .filter-box { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; margin-bottom: 10px; }
-    .filter-group { flex: 1; min-width: 110px; }
+    .filter-group { flex: 1; min-width: 130px; }
     .filter-group label { margin-top: 0; margin-bottom: 2px; font-size: 11px; }
-    .filter-group input, .filter-group select { margin-top: 0; padding: 7px; font-size: 12px; }
+    .filter-group input, .filter-group select { margin-top: 0; padding: 8px; font-size: 12px; }
     
     .row-opening { background-color: #e8f8f5; font-weight: bold; }
 
     .btn-tool { background-color: #e67e22; margin-top: 0; padding: 6px 10px; font-size: 11px; flex: 1; }
     .btn-refresh-form { background-color: #3498db; margin-top: 0; padding: 6px 10px; font-size: 11px; flex: 1; }
 
-    .export-box { display: flex; gap: 6px; margin-top: 10px; }
-    .btn-export { flex: 1; margin-top: 0; padding: 7px 4px; font-size: 11px; }
+    .export-box { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+    .btn-export { flex: 1; min-width: 90px; margin-top: 0; padding: 8px 4px; font-size: 11px; }
     .btn-print { background-color: #34495e; }
     .btn-pdf { background-color: #c0392b; }
     .btn-excel { background-color: #27ae60; }
@@ -95,7 +101,7 @@
       .card { box-shadow: none; max-width: 100%; width: 100%; padding: 0; }
       .tabs, .sub-tabs, .network-bar, .btn-sheet, .export-box, .filter-box, .btn-action, .btn-refresh-form, .btn-tool, .btn-logout { display: none !important; }
       #statementTab { display: block !important; }
-      table { font-size: 10px; width: 100%; border: 1px solid #000; }
+      table { font-size: 10px; width: 100%; border: 1px solid #000; min-width: 100%; }
       th, td { border: 1px solid #000 !important; padding: 4px; }
       th { background-color: #eee !important; color: #000 !important; }
       @page { size: A4 portrait; margin: 10mm; }
@@ -104,7 +110,7 @@
 </head>
 <body>
 
-<!-- فرم ورود به برنامه -->
+<!-- فرم ورود -->
 <div id="loginSection" class="login-container">
   <div class="login-card">
     <h2>🔑 ورود به نرم‌افزار حسابداری</h2>
@@ -117,7 +123,7 @@
   </div>
 </div>
 
-<!-- کادر اصلی برنامه حسابداری -->
+<!-- کارت اصلی برنامه -->
 <div id="appSection" class="card">
   <div class="header-bar">
     <h3 class="header-title">حسابداری همراه</h3>
@@ -333,9 +339,8 @@
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxR-p8vrf0B1fQ5QVPH5qd9EoQupnt0eSg2KkfHARYfZpfaDdNa1TknWEOkCo12kbJC/exec";
   const SHEET_URL = "https://docs.google.com/spreadsheets/d/19yEdJgHZMZLlGtF-GDk5bzFUqe0yTN9mx5I4sUDVNSo/edit?gid=1905142774#gid=1905142774";
 
-  // نام کاربری و رمز عبور ورود به برنامه
   const APP_USER = "admin";
-  const APP_PASS = "Malihe.Hami135499";
+  const APP_PASS = "135499";
 
   let rawTransactions = [];
   let allTransactions = [];
@@ -351,7 +356,6 @@
     checkLoginSession();
   });
 
-  // کنترل ورود و احراز هویت
   document.getElementById("loginForm").addEventListener("submit", function(e) {
     e.preventDefault();
     const user = document.getElementById("usernameInput").value.trim();
